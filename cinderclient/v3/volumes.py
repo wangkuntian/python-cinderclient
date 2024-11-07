@@ -51,6 +51,10 @@ class Volume(volumes.Volume):
         """Revert a volume to a snapshot."""
         self.manager.revert_to_snapshot(self, snapshot)
 
+    def revert_to_snapshot_ut(self, snapshot):
+        """Revert a volume to a snapshot."""
+        self.manager.revert_to_snapshot_ut(self, snapshot)
+
     def migrate_volume(self, host, force_host_copy, lock_volume, cluster=None):
         """Migrate the volume to a new host."""
         return self.manager.migrate_volume(self, host, force_host_copy,
@@ -133,6 +137,17 @@ class VolumeManager(volumes.VolumeManager):
         :param snapshot: snapshot object or snapshot id.
         """
         return self._action('revert', volume,
+                            info={'snapshot_id': base.getid(snapshot)})
+
+    @api_versions.wraps('3.40')
+    def revert_to_snapshot_ut(self, volume, snapshot):
+        """Revert a volume to a snapshot.
+
+        The snapshot no limit.
+        :param volume: volume object.
+        :param snapshot: snapshot object or its ID.
+        """
+        return self._action('revert_ut', volume,
                             info={'snapshot_id': base.getid(snapshot)})
 
     @api_versions.wraps('3.12')
